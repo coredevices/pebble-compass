@@ -1,8 +1,10 @@
 #include "pebble.h"
+#include "missing_compass_window.h"
 #include "compass_window.h"
 #include "compass_calibration_window.h"
 
 static CompassWindow *compass_window;
+static MissingCompassWindow *missing_compass_window;
 
 // uncomment this line to do nothing but showing the calibration screen
 //#define DEMO_CALIBRATION_MODE
@@ -36,18 +38,24 @@ static void init(void) {
     window_stack_push(compass_calibration_window_get_window(calibration_window), true);
     fake_calibration_window();
 
-#else
+#elif defined(PBL_COMPASS)
     compass_window = compass_window_create();
 
     window_stack_push(compass_window_get_window(compass_window), true);
+#else
+    missing_compass_window = missing_compass_window_create();
+
+    window_stack_push(missing_compass_window_get_window(missing_compass_window), true);
 #endif
 }
 
 static void deinit(void) {
 #ifdef DEMO_CALIBRATION_MODE
     compass_calibration_window_destroy(calibration_window);
-#else
+#elif defined(PBL_COMPASS)
     compass_window_destroy(compass_window);
+#else
+    missing_compass_window_destroy(missing_compass_window);
 #endif
 }
 

@@ -3,4 +3,4 @@
 build
 .idea
 compass.xcodeproj/xcuserdata
-.lock-waf_darwin_build
+.lock-waf_*_build
