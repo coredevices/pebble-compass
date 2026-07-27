@@ -301,6 +301,7 @@ static void handle_data_provider_interference_update(DataProvider *provider, voi
 CompassWindow *compass_window_create() {
     Window *window = window_create();
     CompassWindowData *data = malloc(sizeof(CompassWindowData));
+    memset(data, 0, sizeof(CompassWindowData));
 
     data->data_provider = data_provider_create(data, (DataProviderHandlers) {
             .presented_angle_or_accel_data_changed = handle_data_provider_update,

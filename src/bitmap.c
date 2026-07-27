@@ -35,7 +35,16 @@ GColor get_bitmap_color_from_palette_index(GBitmap *bitmap, uint8_t index) {
 }
 
 GColor get_bitmap_pixel_color(GBitmap *bitmap, GBitmapFormat bitmap_format, int y, int x) {
+  GRect bounds = gbitmap_get_bounds(bitmap);
+  if (y < 0 || y >= bounds.size.h) {
+    // out-of-bounds y reads past the circular framebuffer's row-info table on
+    // round displays (wild pointer -> app fault), see FIRM-3607
+    return GColorClear;
+  }
   GBitmapDataRowInfo row = gbitmap_get_data_row_info(bitmap, y);
+  if (x < row.min_x || x > row.max_x) {
+    return GColorClear;
+  }
   switch(bitmap_format) {
     case GBitmapFormat1Bit :
       return ((row.data[x / 8] >> (x % 8)) & 1) == 1 ? GColorWhite : GColorBlack;
